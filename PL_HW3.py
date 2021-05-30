@@ -28,8 +28,11 @@ def multiplication_table():
         print()
 
 # q3
+
+
 class a():
     z = 0
+
     def __init__(self, y):
         self.y = y
 
@@ -54,15 +57,16 @@ def sort_list_with_lambda(list_of_numbers):
 
 # q5-a-b
 def call_counter(func):
-    def helper(*args , **kargs):
+    def helper(*args, **kargs):
         call_counter.total_count += 1
         helper.calls += 1
         helper.params += (len(args)+len(kargs))
         print(f"calls for current:{helper.calls}")
         print(f"params for current:{helper.params}")
         print(f"total invokes: {call_counter.total_count}")
-        func_type  = type(func(*args,**kargs)).__name__
-        call_counter.types[func_type] = call_counter.types.get(func_type , 0) + 1
+        func_type = type(func(*args, **kargs)).__name__
+        call_counter.types[func_type] = call_counter.types.get(
+            func_type, 0) + 1
         print(call_counter.types)
         return func(*args, **kargs)
     helper.calls = 0
@@ -75,12 +79,39 @@ def call_counter(func):
 def succ(x):
     return x+1
 
+
 @call_counter
 def fail(x):
     return str(x+1)
 
+
+# q6
+def q6_pizza_calories(func):
+    def helper(*args, **kargs):
+        helper.calls += 1
+        double_cheese = 1
+        half_pizza = 1
+        sum_toppings = 0
+        if kargs['is_double_cheese'] == True: # check if is_double_cheese is True
+            double_cheese = 2
+        if not kargs['full_topping']: # check if full_topping is False
+            half_pizza = 0.5
+        if args[3]:
+            sum_toppings = sum([topping.value*half_pizza for topping in args[3]]) # sum toppings calories
+        helper.calories += args[0].value + args[1].value + args[2].value*double_cheese + sum_toppings
+        print(f'This pizza has {helper.calories} calories!')
+        return func(*args, **kargs)
+    helper.calls = 0
+    helper.calories = 0
+    helper.__name__ = func.__name__
+    return helper
+
+@q6_pizza_calories
+def pizza_factory(dough, sauce, cheese, toppings, is_double_cheese, full_topping):
+    return Pizza(dough, sauce, cheese, toppings, is_double_cheese, full_topping)
+
 # q7
-def a():
+def a7():
     rand_number = random.randint(1, 5)
     c_function = c()
     b2_function = b2()
@@ -94,12 +125,14 @@ def a():
     b2_function.send(rand_number)
     b3_function.send(rand_number)
 
+
 def b2():
     function_c = yield
     while True:
         a_number = yield
         powed_number = pow(a_number, 2)
         function_c.send(powed_number)
+
 
 def b3():
     function_c = yield
@@ -108,16 +141,18 @@ def b3():
         powed_number = pow(a_number, 3)
         function_c.send(powed_number)
 
+
 def c():
     while True:
         a_number = yield
         b2_number = yield
         b3_number = yield
-        sum_b2_b3 = b2_number+ b3_number
+        sum_b2_b3 = b2_number + b3_number
         function_c.send(powed_number)
         print(f"A number: {a_number} , sum of b2, b3: {sum_b2_b3}")
 
-# Driver method to test answers        
+
+# Driver method to test answers
 if __name__ == "__main__":
     list_of_types = [[1, 5, 3], ['a', 'v', 3], ["sss", 'b'],
                      [], [[3, 4, 5], ['a']], [(4, 5, 6), [4, 5, 6]]]
@@ -136,7 +171,7 @@ if __name__ == "__main__":
     print("\n**** Testing q3 ****")
     print(a(5)(b(6)()))
     print(a(6)(b(5)(6)))
-    
+
     # Test q4
     print("\n**** Testing q4 ****")
     print(f"The list of numbers is:\n{list_of_numbers} \
@@ -154,6 +189,5 @@ if __name__ == "__main__":
     # Test q6
     print("\n**** Testing q6 ****")
     toppings = [Toppings.OLIVES, Toppings.ONION]
-    p = Pizza(Dough.WITHOUT_GLUTEN_SOFT, Sauce.PESTO,
-              Cheese.MOZZARELLA, toppings)
-    print(p)
+    pizza = pizza_factory(Dough.WITHOUT_GLUTEN_SOFT, Sauce.PESTO, Cheese.MOZZARELLA, toppings, is_double_cheese=False, full_topping=True)
+    print(pizza)
